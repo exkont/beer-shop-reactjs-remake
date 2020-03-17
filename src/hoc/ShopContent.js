@@ -12,34 +12,20 @@ function ShopContent(props) {
     let [page, setPage] = useState(1);
     let [countOfPages, setCountOfPages] = useState(1);
     // где используется setMaxCountOfPages? Есмли ни где то нет смысла в useState
-    let [maxCountOfPages, setMaxCountOfPages] = useState(5);
+    const maxCountOfPages = 5;
     // тоже самое что и выше.
-    let [countOfBeersPerPage, setCountOfBeersPerPage] = useState(20);
+    const countOfBeersPerPage = 20;
     // ревью: очень сложная конструкция, лучше разделить на переменные
     // плюс сомневаюсь что тут вообще надо useState.
     let [storageArrayOfIDs, setStorageArrayOfIDs] = useState(localStorage.getItem('listOfIDs') ?
         new Set(localStorage.getItem('listOfIDs').split('|').map(e => Number(e))) : new Set([]));
     let [searchString, setSearchString] = useState('');
     let [searchParameter, setSearchParameter] = useState('');
-    //ревью: зачем тут window ?
-    window.data = data;
-    window.goal = goal;
-    window.page = page;
-
-     //ревью: это безполеные функции, получается что бы просто вызвать функцию ты просто вызываешь функцию.
-    //  если вызывать функции setPage и setGoal ни че не поменяется в работе, за то станет меньше кода.
-    function changePage(page) {
-        setPage(page);
-    }
-
-    function changeGoal(goal) {
-        setGoal(goal);
-    }
 
     function changeSearchParameters(searchString, searchParameter) {
         setSearchString(searchString);
         setSearchParameter(searchParameter);
-        changeGoal('search');
+        setGoal('search');
     }
 
     function changeBucketList(id) {
@@ -106,14 +92,14 @@ function ShopContent(props) {
             //ревью: Зачем тут самовызывающаяся фунция?
             (function searchProduct() {
                 if (searchString === '' || searchParameter === '') {
-                    changeGoal('list');
-                    changePage(1);
+                    setGoal('list');
+                    setPage(1);
                     sendRequest(createUrlRequest(goal, page, countOfBeersPerPage)).then(data => {
                         changeCountOfPages();
                         setData(data);
                     });
                 } else {
-                    changeGoal('search');
+                    setGoal('search');
                 // ревью:  функции в нутри функции лучше не объявляй, старайся боле плоскую форму кода делать.
                      async function* fetchCommits() {
                         let pageRequest = 1;
@@ -166,7 +152,7 @@ function ShopContent(props) {
 
     return <props.component data={data}
                             page={page}
-                            changePage={changePage}
+                            changePage={setPage}
                             countOfPages={countOfPages}
                             changeBucketList={changeBucketList}
                             storageArrayOfIDs={storageArrayOfIDs}
