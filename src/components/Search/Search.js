@@ -22,11 +22,9 @@ function Search(props) {
         }
         if (target.tagName === 'LABEL' || target.tagName === 'INPUT') {
             //ревью: return можно убрать просто ставив el.current.checked после =>
-            const checkedElem = radioButtons.find(el => {
-                return el.current.checked
-            });
+            const checkedElem = radioButtons.find(el => el.current.checked);
             //ревью: сравнение с Undefined не обязательно, тут сработает приведение типов.
-            searchParameter = checkedElem === undefined ? '' : checkedElem.current.value;
+            searchParameter = checkedElem ? checkedElem.current.value : '';
             searchString = searchStringInput.current.value;
         }
         if (searchString || searchParameter) {
@@ -39,22 +37,20 @@ function Search(props) {
             // ревью: это всё можно сделать через цикл.
             <div className={classes.formRadioBtn}>
                 <input className={classes.formRadioBtnBtn} ref={radioName} type="radio" name="radio" value="name"/>
-                <label htmlFor="radio-1">name</label>
+                <label htmlFor="">name</label>
             </div>
             <div className={classes.formRadioBtn}>
                 <input className={classes.formRadioBtnBtn} ref={radioTagline} type="radio" name="radio"
                        value="tagline"/>
-                <label htmlFor="radio-2">tagline</label>
+                <label htmlFor="">tagline</label>
             </div>
             <div className={classes.formRadioBtn}>
                 <input className={classes.formRadioBtnBtn} ref={radioDescription} type="radio" name="radio"
                        value="description"/>
-                <label htmlFor="radio-3">description</label>
+                <label htmlFor="">description</label>
             </div>
             <label className={classes.searchString}>Search
                 <input type="text" className={classes.searchStringInput} ref={searchStringInput} name="searchString"/>
-                // ревью: непонятный span
-                <span className=""></span>
             </label>
         </div>
     )

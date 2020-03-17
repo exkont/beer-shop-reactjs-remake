@@ -86,7 +86,6 @@ function ShopContent(props) {
         let pageRequest = 1;
         while (true) {
             let url = createUrlRequest('list', pageRequest, maxCountOfPages);
-            // const response = await fetch(url);
             const answers = await sendRequest(url);
             if (answers.length === 0) {
                 console.log('больше нет данных, удовлетворяющих поиск');
