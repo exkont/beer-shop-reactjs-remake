@@ -17,8 +17,9 @@ function ShopContent(props) {
     const countOfBeersPerPage = 20;
     // ревью: очень сложная конструкция, лучше разделить на переменные
     // плюс сомневаюсь что тут вообще надо useState.
-    let [storageArrayOfIDs, setStorageArrayOfIDs] = useState(localStorage.getItem('listOfIDs') ?
-        new Set(localStorage.getItem('listOfIDs').split('|').map(e => Number(e))) : new Set([]));
+    const listOfIDsLocalStorage = localStorage.getItem('listOfIDs');
+    let [storageArrayOfIDs, setStorageArrayOfIDs] = useState(listOfIDsLocalStorage ?
+        new Set(listOfIDsLocalStorage.split('|').map(e => Number(e))) : new Set([]));
     let [searchString, setSearchString] = useState('');
     let [searchParameter, setSearchParameter] = useState('');
 
@@ -30,15 +31,15 @@ function ShopContent(props) {
 
     function changeBucketList(id) {
         if (storageArrayOfIDs.has(id)) {
-            setStorageArrayOfIDs(storageArrayOfIDs.delete(id));
+            storageArrayOfIDs.delete(id);
         } else {
-            setStorageArrayOfIDs(storageArrayOfIDs.add(id));
+            storageArrayOfIDs.add(id);
+            storageArrayOfIDs = new Set(([...storageArrayOfIDs].sort((a, b) => a - b)));
         }
         //ревью: сортировать надо только при добавлении нового элемента.. а у тебя логика работает и при удалении.
         // плюс лучше сначала взять добавить отсортировать а пото записать в state. А не два раза делать запись.
-        const newStorageArrayOfIDs = new Set(([...storageArrayOfIDs].sort((a, b) => a - b)));
-        setStorageArrayOfIDs(newStorageArrayOfIDs);
-        localStorage.setItem('listOfIDs', `${[...newStorageArrayOfIDs].join('|')}`);
+        setStorageArrayOfIDs(new Set([...storageArrayOfIDs]));
+        localStorage.setItem('listOfIDs', `${[...storageArrayOfIDs].join('|')}`);
     }
 
     function changeCountOfPages() {
