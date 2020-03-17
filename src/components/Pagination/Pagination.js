@@ -24,7 +24,7 @@ function Pagination(props) {
                 el.className = classes.paginationNextPage;
             });
             // ревью: можно использовать шаблонные строки.
-            target.className = classes.paginationNextPageActive + ' ' + classes.paginationNextPage;
+            target.className = `${classes.paginationNextPageActive} ${classes.paginationNextPage}`;
         }
     }
 

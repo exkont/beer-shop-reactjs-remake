@@ -102,9 +102,9 @@ function ShopContent(props) {
         let searchItems = [];
         for await (const PageData of fetchPagersData()) {
             // ревью: трудночитаемое условие.
-            const isContainSearchingParameters = PageData[searchParameter].toLowerCase().indexOf(`${searchString.toLowerCase()}`) >= 0;
+            const isDataContainSearchingParameters = PageData[searchParameter].toLowerCase().indexOf(`${searchString.toLowerCase()}`) >= 0;
             const isUniqueItems = searchItems.find(elem => elem.id === PageData.id) === undefined;
-            if (isContainSearchingParameters && isUniqueItems) {
+            if (isDataContainSearchingParameters && isUniqueItems) {
                 searchItems.push(PageData);
             }
             if (searchItems.length >= maxCountOfPages * countOfBeersPerPage) {

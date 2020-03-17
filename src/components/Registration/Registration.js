@@ -108,10 +108,10 @@ function Registration(props) {
 
             // ревью  выглядит избыточным сразу несколько последовательных вложений в одним и тем же обработчиком.
             <div onClick={showPopup}>
-                <div className={classes.wrapperPopupRegistration} onClick={showPopup}>
+                <div className={classes.wrapperPopupRegistration}>
 
                 </div>
-                <div className={classes.popupRegistration} ref={popupRegistration} onClick={showPopup}>
+                <div className={classes.popupRegistration} ref={popupRegistration}>
                     <a href=""><span className={classes.popupRegistration__cross}>x</span></a>
                     <form action="" className={classes.registrationForm} onChange={setClassForValidate}>
                         // ревью: элементы формы можно разбить на отдельные компоненты со своими валидаторами и всем таким прочим.
