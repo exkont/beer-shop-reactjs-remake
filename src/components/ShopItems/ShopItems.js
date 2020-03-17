@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import classes from './ShopItems.module.css';
+import Item from "../Item/Item";
 
 function ShopItems(props) {
     const [items, setItems] = useState(props.shopItems);
@@ -14,30 +15,16 @@ function ShopItems(props) {
     useEffect(() => {
         if (props.shopItems) {
             let countOfBeersPerPage = 0;
-            setItems(
-                //ревью: нет смысла в map тут, лучше просто for.
-                props.shopItems.map(item => {
-                    if (countOfBeersPerPage < props.countOfBeersPerPage) {
-                        countOfBeersPerPage++;
-                        return (
-                            // ревью: лучше вынести это в отдельный комопнент, который отвечает чисто только за представление.
-                            <div key={item.id} onClick={changeBucketItem}>
-                                <h1>{item.name}</h1>
-                                <h3>{item.tagline}</h3>
-                                <h6>{item.description}</h6>
-                                <label className={classes.containerCheckbox}>Add
-                                    <input className={classes.containerCheckboxInput}
-                                           type="checkbox"
-                                           name={item.id}
-                                           checked={props.storageArrayOfIDs.has(item.id)}
-                                    />
-                                    <span className={classes.checkmark}/>
-                                </label>
-                            </div>
-                        )
-                    }
-                })
-            );
+            let itemsArr = [];
+            //ревью: нет смысла в map тут, лучше просто for.
+            for (let i = 0; i < props.shopItems.length; i++) {
+                if (countOfBeersPerPage < props.countOfBeersPerPage) {
+                    countOfBeersPerPage++;
+                    // ревью: лучше вынести это в отдельный комопнент, который отвечает чисто только за представление.
+                    itemsArr.push(<Item item={props.shopItems[i]} storageArrayOfIDs={props.storageArrayOfIDs}/>);
+                }
+            }
+            setItems(<div onClick={changeBucketItem}>{itemsArr}</div>);
         }
     }, [props.shopItems, props.storageArrayOfIDs]);
 
