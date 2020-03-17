@@ -82,6 +82,64 @@ function ShopContent(props) {
         }
     };
 
+    async function* fetchPagersData() {
+        let pageRequest = 1;
+        while (true) {
+            let url = createUrlRequest('list', pageRequest, maxCountOfPages);
+            // const response = await fetch(url);
+            const answers = await sendRequest(url);
+            if (answers.length === 0) {
+                console.log('больше нет данных, удовлетворяющих поиск');
+                return;
+            }
+            pageRequest++;
+            for (let answer of answers) {
+                yield answer;
+            }
+        }
+    }
+
+    async function getSearchingData() {
+        let searchItems = [];
+        for await (const PageData of fetchPagersData()) {
+            // ревью: трудночитаемое условие.
+            const isContainSearchingParameters = PageData[searchParameter].toLowerCase().indexOf(`${searchString.toLowerCase()}`) >= 0;
+            const isUniqueItems = searchItems.find(elem => elem.id === PageData.id) === undefined;
+            if (isContainSearchingParameters && isUniqueItems) {
+                searchItems.push(PageData);
+            }
+            if (searchItems.length >= maxCountOfPages * countOfBeersPerPage) {
+                break;
+            }
+        }
+        return searchItems;
+    }
+
+    function searchProduct() {
+        if (searchString === '' || searchParameter === '') {
+            setGoal('list');
+            setPage(1);
+            sendRequest(createUrlRequest(goal, page, countOfBeersPerPage)).then(data => {
+                changeCountOfPages();
+                setData(data);
+            });
+        } else {
+            setGoal('search');
+            //ревью: самовызывающие функции не особо уместны, лучше разбивать всё на более мелкие спецэффичиские
+            getSearchingData().then(searchItems => {
+                searchItems = searchItems.sort((a, b) => {
+                    if (a[searchParameter].toLowerCase() > b[searchParameter].toLowerCase()) return 1;
+                    if (a[searchParameter].toLowerCase() < b[searchParameter].toLowerCase()) return -1;
+                    return 0;
+                    // return a.id - b.id;
+                });
+                setCountOfPages(Math.ceil(searchItems.length / countOfBeersPerPage));
+                searchItems = searchItems.slice(countOfBeersPerPage * (page - 1), countOfBeersPerPage * page);
+                setData(searchItems);
+            });
+        }
+    }
+
     useEffect(() => {
         if (goal === 'list' || goal === 'bucket') {
             sendRequest(createUrlRequest(goal, page, countOfBeersPerPage)).then(data => {
@@ -90,64 +148,7 @@ function ShopContent(props) {
             });
         }
         if (goal === 'search') {
-            //ревью: Зачем тут самовызывающаяся фунция?
-            (function searchProduct() {
-                if (searchString === '' || searchParameter === '') {
-                    setGoal('list');
-                    setPage(1);
-                    sendRequest(createUrlRequest(goal, page, countOfBeersPerPage)).then(data => {
-                        changeCountOfPages();
-                        setData(data);
-                    });
-                } else {
-                    setGoal('search');
-                // ревью:  функции в нутри функции лучше не объявляй, старайся боле плоскую форму кода делать.
-                     async function* fetchCommits() {
-                        let pageRequest = 1;
-                        while (true) {
-                            let url = createUrlRequest('list', pageRequest, maxCountOfPages);
-                            const response = await fetch(url);
-                            const answers = await response.json();
-                            if (answers.length === 0) {
-                                console.log('больше нет данных, удовлетворяющих поиск');
-                                return;
-                            }
-                            pageRequest++;
-                            for (let answer of answers) {
-                                yield answer;
-                            }
-                        }
-                    }
-
-                    //ревью: самовызывающие функции не особо уместны, лучше разбивать всё на более мелкие спецэффичиские
-                    (async () => {
-                        let searchItems = [];
-                        let countOfItemsToSkip;
-                        //ревью: конструкция await выглядит странно. между проходами генератора, асинхронное действие
-                        // будет только первым вызовом, остальные синхронные.
-                        for await (const commit of fetchCommits()) {
-                            console.log(commit)
-                                // ревью: трудночитаемое условие.
-                            if ((commit[searchParameter].toLowerCase().indexOf(`${searchString.toLowerCase()}`) >= 0) &&
-                                (searchItems.find(elem => elem.id === commit.id) === undefined)) {
-                                searchItems.push(commit);
-                            }
-                            if (searchItems.length >= maxCountOfPages * countOfBeersPerPage) {
-                                break;
-                            }
-                        }
-                        searchItems = searchItems.sort((a, b) => {
-                            if (a[searchParameter].toLowerCase() > b[searchParameter].toLowerCase()) return 1;
-                            if (a[searchParameter].toLowerCase() < b[searchParameter].toLowerCase()) return -1;
-                            return 0;
-                            // return a.id - b.id;
-                        });
-                        setCountOfPages(Math.ceil(searchItems.length / countOfBeersPerPage));
-                        searchItems = searchItems.slice(countOfBeersPerPage*(page-1), countOfBeersPerPage*page);
-                        setData(searchItems);
-                    })()
-                }
-            }())
+            searchProduct();
         }
     }, [page, goal, searchString, searchParameter]);
 
