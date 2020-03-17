@@ -1,0 +1,29 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1.25rem;
+}
+
+.nextSection {
+    text-decoration: none;
+    color: black;
+}
+
+.nextSection:hover {
+    text-decoration: underline;
+}
+
+.nextSectionContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nextSectionContentPreview {
+    width: 2.5rem;
+}
+
+.nextSectionContentName {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}

@@ -1,0 +1,7 @@
+.registrationButton {
+    height: 50px;
+    border-radius: 8px;
+    border: 1px solid black;
+    font-size: 20px;
+    cursor: pointer;
+}
