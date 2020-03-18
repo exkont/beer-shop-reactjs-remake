@@ -27,45 +27,39 @@ function Registration(props) {
 
     function setClassForValidate(elem) {
         elem.target.classList.add('touched');
-        checkElementsClassesForValidate();
+        validate(elem.target);
     }
 
-    function checkElementsClassesForValidate() {
-        for (let i = 0; i < registrationInputs.length; i++) {
-            validate(registrationInputs[i], i);
-        }
-    }
-
-    function validate(validatingElem, i) {
+    function validate(validatingElem) {
         switch (validatingElem.name) {
             case 'email':
                 if (!validatorsData.emailValidator.test(validatingElem.value.toLowerCase())) {
-                    validatorsData.errorFields[i].innerHTML = 'you entered incorrect email';
+                    validatingElem.nextSibling.innerHTML = 'you entered incorrect email';
                 } else {
-                    validatorsData.errorFields[i].innerHTML = '';
+                    validatingElem.nextSibling.innerHTML = '';
                 }
                 break;
             case 'password':
             case 'password-repeat':
                 if (validatingElem.value.length < 7) {
-                    validatorsData.errorFields[i].innerHTML = 'password must be more than 6 symbols';
+                    validatingElem.nextSibling.innerHTML = 'password must be more than 6 symbols';
                 } else {
-                    validatorsData.errorFields[i].innerHTML = '';
+                    validatingElem.nextSibling.innerHTML = '';
                 }
                 break;
             case 'first-name':
             case 'last-name':
                 if (validatingElem.value.length < 5) {
-                    validatorsData.errorFields[i].innerHTML = 'your name must be longer than 5 symbols';
+                    validatingElem.nextSibling.innerHTML = 'your name must be longer than 5 symbols';
                 } else {
-                    validatorsData.errorFields[i].innerHTML = '';
+                    validatingElem.nextSibling.innerHTML = '';
                 }
                 break;
             case 'date':
                 if (validatingElem.value === '') {
-                    validatorsData.errorFields[i].innerHTML = 'you didn\'t chose date';
+                    validatingElem.nextSibling.innerHTML = 'you didn\'t chose date';
                 } else {
-                    validatorsData.errorFields[i].innerHTML = '';
+                    validatingElem.nextSibling.innerHTML = '';
                 }
         }
         if (registrationInputs[1].className.indexOf('touched') !== -1 &&
@@ -80,10 +74,19 @@ function Registration(props) {
             case 'password':
             case 'password-repeat':
                 if (elem1.value !== elem2.value) {
-                    elem1.nextSibling.innerHTML = elem1.nextSibling.innerHTML === '' ?
-                        'passwords are not equal' : 'password must be more than 6 symbols passwords are not equal';
-                    elem2.nextSibling.innerHTML = elem2.nextSibling.innerHTML === '' ?
-                        'passwords are not equal' : 'password must be more than 6 symbols passwords are not equal';
+                    if (elem1.nextSibling.innerHTML === '' || elem1.nextSibling.innerHTML === 'passwords are not equal') {
+                        elem1.nextSibling.innerHTML = 'passwords are not equal';
+                    } else {
+                        elem1.nextSibling.innerHTML = 'password must be more than 6 symbols and passwords are not equal';
+                    }
+                    if (elem2.nextSibling.innerHTML === '' || elem2.nextSibling.innerHTML === 'passwords are not equal') {
+                        elem2.nextSibling.innerHTML = 'passwords are not equal';
+                    } else {
+                        elem2.nextSibling.innerHTML = 'password must be more than 6 symbols and passwords are not equal';
+                    }
+                } else {
+                    elem1.nextSibling.innerHTML = '';
+                    elem2.nextSibling.innerHTML = '';
                 }
         }
     }
@@ -114,7 +117,8 @@ function Registration(props) {
                 <div className={classes.popupRegistration} ref={popupRegistration}>
                     <a href=""><span className={classes.popupRegistration__cross}>x</span></a>
                     <form action="" className={classes.registrationForm} onChange={setClassForValidate}>
-                        // ревью: элементы формы можно разбить на отдельные компоненты со своими валидаторами и всем таким прочим.
+                        // ревью: элементы формы можно разбить на отдельные компоненты со своими валидаторами и всем
+                        таким прочим.
                         <h1 className=''>Registration form</h1>
                         <label htmlFor="email" className=''>
                             Email
@@ -156,7 +160,7 @@ function Registration(props) {
                                 type="button"
                                 className={classes.registrationForm__buttonSubmit}
                                 onClick={registerUser}
-                                >Registration
+                        >Registration
                         </button>
                     </form>
                 </div>
