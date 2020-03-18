@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-
+import {getSearchingData} from './SearchFunction';
 
 // ревью: плохо то что у тебя в одно компоненте находится сразу вся логика..
 // тут и работа с поиском и с пагинацией, такие вещи надо разносить по разным компонентам.
@@ -69,38 +69,6 @@ function ShopContent(props) {
         }
     };
 
-    async function* fetchPagersData() {
-        let pageRequest = 1;
-        while (true) {
-            let url = createUrlRequest('list', pageRequest, maxCountOfPages);
-            const answers = await sendRequest(url);
-            if (answers.length === 0) {
-                console.log('больше нет данных, удовлетворяющих поиск');
-                return;
-            }
-            pageRequest++;
-            for (let answer of answers) {
-                yield answer;
-            }
-        }
-    }
-
-    async function getSearchingData() {
-        let searchItems = [];
-        for await (const PageData of fetchPagersData()) {
-            // ревью: трудночитаемое условие.
-            const isDataContainSearchingParameters = PageData[searchParameter].toLowerCase().indexOf(`${searchString.toLowerCase()}`) >= 0;
-            const isUniqueItems = searchItems.find(elem => elem.id === PageData.id) === undefined;
-            if (isDataContainSearchingParameters && isUniqueItems) {
-                searchItems.push(PageData);
-            }
-            if (searchItems.length >= maxCountOfPages * countOfBeersPerPage) {
-                break;
-            }
-        }
-        return searchItems;
-    }
-
     function searchProduct() {
         if (searchString === '' || searchParameter === '') {
             setGoal('list');
@@ -111,13 +79,7 @@ function ShopContent(props) {
         } else {
             setGoal('search');
             //ревью: самовызывающие функции не особо уместны, лучше разбивать всё на более мелкие спецэффичиские
-            getSearchingData().then(searchItems => {
-                searchItems = searchItems.sort((a, b) => {
-                    if (a[searchParameter].toLowerCase() > b[searchParameter].toLowerCase()) return 1;
-                    if (a[searchParameter].toLowerCase() < b[searchParameter].toLowerCase()) return -1;
-                    return 0;
-                    // return a.id - b.id;
-                });
+            getSearchingData(searchParameter, searchString, createUrlRequest).then(searchItems => {
                 setFoundItems([...searchItems]);
                 searchItems = searchItems.slice(countOfBeersPerPage * (page - 1), countOfBeersPerPage * page);
                 setData(searchItems);
