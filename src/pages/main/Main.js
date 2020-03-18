@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
 import Header from "../../components/Header/Header";
 import ShopItems from "../../components/ShopItems/ShopItems";
-import Pagination from "../../components/Pagination/Pagination";
 import Search from "../../components/Search/Search";
+import PaginationContainer from "../../components/Pagination/PaginationConainer";
 
 function Main(props) {
 
@@ -16,7 +16,15 @@ function Main(props) {
                        storageArrayOfIDs={props.storageArrayOfIDs}
                        countOfBeersPerPage={props.countOfBeersPerPage}
             />
-            <Pagination countOfPages={props.countOfPages} changePage={props.changePage} page={props.page}/>
+            <PaginationContainer data={props.data}
+                                 changePage={props.changePage}
+                                 page={props.page}
+                                 maxCountOfPages={props.maxCountOfPages}
+                                 storageArrayOfIDs={props.storageArrayOfIDs}
+                                 countOfBeersPerPage={props.countOfBeersPerPage}
+                                 goal={props.goal}
+                                 foundItems={props.foundItems}
+            />
         </div>
     )
 }

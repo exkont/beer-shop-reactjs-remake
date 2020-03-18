@@ -31,9 +31,9 @@ function Search(props) {
         <div className={classes.findingSection} onClick={sendSearchParameters} onChange={sendSearchParameters}>
             // ревью: это всё можно сделать через цикл.
             {
-                ['name', 'tagline', 'description'].map(value => {
+                ['name', 'tagline', 'description'].map((value, index) => {
                     return (
-                        <div className={classes.formRadioBtn}>
+                        <div className={classes.formRadioBtn} key={index}>
                             <input className={classes.formRadioBtnBtn} type="radio" name="radio" value={value}/>
                             <label htmlFor="">{value}</label>
                         </div>

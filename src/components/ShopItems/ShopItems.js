@@ -21,7 +21,7 @@ function ShopItems(props) {
                 if (countOfBeersPerPage < props.countOfBeersPerPage) {
                     countOfBeersPerPage++;
                     // ревью: лучше вынести это в отдельный комопнент, который отвечает чисто только за представление.
-                    itemsArr.push(<Item item={props.shopItems[i]} storageArrayOfIDs={props.storageArrayOfIDs}/>);
+                    itemsArr.push(<Item item={props.shopItems[i]} storageArrayOfIDs={props.storageArrayOfIDs} key={i}/>);
                 }
             }
             setItems(<div onClick={changeBucketItem}>{itemsArr}</div>);

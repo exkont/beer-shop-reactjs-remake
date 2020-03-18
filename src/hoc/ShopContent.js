@@ -10,7 +10,7 @@ function ShopContent(props) {
     let [goal, setGoal] = useState(props.goal);
     let [data, setData] = useState([]);
     let [page, setPage] = useState(1);
-    let [countOfPages, setCountOfPages] = useState(1);
+    let [foundItems, setFoundItems] = useState();
     // где используется setMaxCountOfPages? Есмли ни где то нет смысла в useState
     const maxCountOfPages = 5;
     // тоже самое что и выше.
@@ -40,19 +40,6 @@ function ShopContent(props) {
         // плюс лучше сначала взять добавить отсортировать а пото записать в state. А не два раза делать запись.
         setStorageArrayOfIDs(new Set([...storageArrayOfIDs]));
         localStorage.setItem('listOfIDs', `${[...storageArrayOfIDs].join('|')}`);
-    }
-
-    function changeCountOfPages() {
-        switch (goal) {
-            case 'list':
-                setCountOfPages(maxCountOfPages);
-                break;
-            case 'bucket':
-                setCountOfPages(Math.ceil(storageArrayOfIDs.size / countOfBeersPerPage));
-                break;
-            case 'search':
-                setCountOfPages(Math.ceil(data.length / countOfBeersPerPage));
-        }
     }
 
     const sendRequest = (url) => {
@@ -119,7 +106,6 @@ function ShopContent(props) {
             setGoal('list');
             setPage(1);
             sendRequest(createUrlRequest(goal, page, countOfBeersPerPage)).then(data => {
-                changeCountOfPages();
                 setData(data);
             });
         } else {
@@ -132,7 +118,7 @@ function ShopContent(props) {
                     return 0;
                     // return a.id - b.id;
                 });
-                setCountOfPages(Math.ceil(searchItems.length / countOfBeersPerPage));
+                setFoundItems([...searchItems]);
                 searchItems = searchItems.slice(countOfBeersPerPage * (page - 1), countOfBeersPerPage * page);
                 setData(searchItems);
             });
@@ -143,7 +129,6 @@ function ShopContent(props) {
         if (goal === 'list' || goal === 'bucket') {
             sendRequest(createUrlRequest(goal, page, countOfBeersPerPage)).then(data => {
                 setData(data);
-                changeCountOfPages();
             });
         }
         if (goal === 'search') {
@@ -153,12 +138,14 @@ function ShopContent(props) {
 
     return <props.component data={data}
                             page={page}
+                            goal={goal}
                             changePage={setPage}
-                            countOfPages={countOfPages}
                             changeBucketList={changeBucketList}
                             storageArrayOfIDs={storageArrayOfIDs}
                             countOfBeersPerPage={countOfBeersPerPage}
                             searchProduct={changeSearchParameters}
+                            maxCountOfPages={maxCountOfPages}
+                            foundItems={foundItems}
     />;
 }
 
